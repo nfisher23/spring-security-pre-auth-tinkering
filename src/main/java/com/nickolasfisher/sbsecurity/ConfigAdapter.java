@@ -2,11 +2,14 @@ package com.nickolasfisher.sbsecurity;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.*;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,13 +31,12 @@ import java.util.Collections;
 
 @Component
 @EnableWebSecurity(debug = true)
+//@EnableGlobalMethodSecurity(securedEnabled=true)
 public class ConfigAdapter extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // TODO
         http.addFilterAfter(filter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/**").authenticated();
+                .authorizeRequests(expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.antMatchers("/**").hasRole("SOMETHING"));
     }
 
     @Bean("customPreAuthProcessingFilter")
@@ -69,7 +71,7 @@ public class ConfigAdapter extends WebSecurityConfigurerAdapter {
                 return new UserDetails() {
                     @Override
                     public Collection<? extends GrantedAuthority> getAuthorities() {
-                        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_SOMETHING"));
+                        return Collections.singletonList(new SimpleGrantedAuthority((String)token.getCredentials()));
                     }
 
                     @Override
@@ -79,7 +81,7 @@ public class ConfigAdapter extends WebSecurityConfigurerAdapter {
 
                     @Override
                     public String getUsername() {
-                        return "jack";
+                        return (String)token.getPrincipal();
                     }
 
                     @Override

@@ -20,3 +20,38 @@ I have to actually include these headers or it won't play ball:
 curl -H 'prince: jack' -H 'cred: ROLE_SOMETHING' localhost:8080/example
 ```
 
+## Adding some stuff
+
+After I modified the PreAuthenticatedUserDetailsService in the PreAuthenticatedAuthenticationProvider bean to
+actually use the `PreAuthenticatedAuthenticationToken` in two methods`:
+
+```
+@Override
+public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singletonList(new SimpleGrantedAuthority((String)token.getCredentials()));
+}
+
+@Override
+public String getUsername() {
+    return (String)token.getPrincipal();
+}
+```
+
+Then this curl gets me a 403:
+
+`curl -H 'prince: jack' -H 'cred: hrm' localhost:8080/example`
+
+But this ones succeeds just fine:
+
+`curl -H 'prince: jack' -H 'cred: ROLE_SOMETHING' localhost:8080/example`
+
+When I have the authorized configuration looking like this:
+
+```
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.addFilterAfter(filter(), UsernamePasswordAuthenticationFilter.class)
+            .authorizeRequests(expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.antMatchers("/**").hasRole("SOMETHING"));
+}
+```
+
