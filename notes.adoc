@@ -1,0 +1,22 @@
+## Proof of concept:
+
+With the authentication manager for AbstractPreAuthenticatedProcessingFilter being of type AbstractPreAuthenticatedProcessingFilter and overriden methods:
+
+```
+@Override
+protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+    return request.getHeader("prince");
+}
+
+@Override
+protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
+    return request.getHeader("cred");
+}
+```
+
+I have to actually include these headers or it won't play ball:
+
+```
+curl -H 'prince: jack' -H 'cred: ROLE_SOMETHING' localhost:8080/example
+```
+
