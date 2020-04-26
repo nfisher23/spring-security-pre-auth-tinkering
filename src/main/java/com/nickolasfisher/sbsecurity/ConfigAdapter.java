@@ -31,12 +31,12 @@ import java.util.Collections;
 
 @Component
 @EnableWebSecurity(debug = true)
-//@EnableGlobalMethodSecurity(securedEnabled=true)
+@EnableGlobalMethodSecurity(securedEnabled=true)
 public class ConfigAdapter extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.addFilterAfter(filter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests(expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.antMatchers("/**").hasRole("SOMETHING"));
+                .authorizeRequests(expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.antMatchers("/**").authenticated());
     }
 
     @Bean("customPreAuthProcessingFilter")

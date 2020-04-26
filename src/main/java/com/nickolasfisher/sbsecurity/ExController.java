@@ -16,7 +16,7 @@ import javax.servlet.Filter;
 public class ExController {
 
     @GetMapping("/example")
-    // @Secured("ROLE_SOMETHING")
+     @Secured("ROLE_SOMETHING")
     public ResponseEntity<String> response() {
         return ResponseEntity.ok("hello");
     }

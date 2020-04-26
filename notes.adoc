@@ -55,3 +55,23 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
+## Another way
+
+I can force the authenticated user to have the role `ROLE_SOMETHING` on a specific endpoint by first enabling the setting:
+
+```
+@EnableGlobalMethodSecurity(securedEnabled=true)
+```
+
+And then set it over the method:
+
+```
+@GetMapping("/example")
+@Secured("ROLE_SOMETHING")
+public ResponseEntity<String> response() {
+    return ResponseEntity.ok("hello");
+}
+```
+
+Then the curls work out the same way.
+
